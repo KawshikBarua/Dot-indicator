@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -37,10 +38,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int num = 0;
+  CarouselController _carouselController = CarouselController();
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
+    Size size = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: SizedBox(
@@ -49,18 +53,51 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                CarouselSlider.builder(
+                    carouselController: _carouselController,
+                    itemCount: 6,
+                    itemBuilder:
+                        (BuildContext context, int itemIdx, int pageViewIdx) {
+                      return Container(
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        height: 400,
+                        decoration: const BoxDecoration(color: Colors.grey),
+                        child: Text("$itemIdx"),
+                      );
+                    },
+                    options: CarouselOptions(
+                      scrollPhysics: const NeverScrollableScrollPhysics(),
+                      viewportFraction: 1,
+                      height: 400,
+                    )),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(onPressed: () {
+                  setState(() {
+                    if (num >= 5) {
+                      num = 0;
+                      _carouselController.jumpToPage(0);
+                    }
+                    else {
+                      num++;
+                      _carouselController.nextPage();
+                    }
+                  });
+                }, child: Text("Next")),
+                const SizedBox(
+                  height: 20,
+                ),
                 Dot(
                   steps: 5,
                   stepNum: num,
-                ),
-                const SizedBox(height: 10,),
-                ElevatedButton(onPressed: () {
-                  setState(() {
-                    num = num>=5?-1:num;
-                    num += 1;
-                  });
-                }, child: const Text("Next"))
+                  activeColor: Colors.red,
+                )
               ],
             )));
   }
+
 }
